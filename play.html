@@ -548,7 +548,7 @@ var GAME = {
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   /* ---------- settings ---------- */
-  var DEF = { sound: true, vib: true, voice: true, voiceName: '', vstyle: 'smooth', wake: false, banter: true, autoUpdate: true, theme: 'auto', teamCount: GAME.defP };
+  var DEF = { sound: true, vib: true, voice: true, voiceName: '', vstyle: 'natural', vs2: true, wake: false, banter: true, autoUpdate: true, theme: 'auto', teamCount: GAME.defP };
   var LIM = { teamCount: [GAME.minP, GAME.maxP, 1] };
   var k;
   for (k in GAME.def) DEF[k] = GAME.def[k];
@@ -556,6 +556,7 @@ var GAME = {
   function defaults() { var o = {}; for (var k in DEF) o[k] = DEF[k]; return o; }
   var settings = defaults(), se0 = load(K_SET);
   if (se0) for (var key in DEF) { if (se0[key] !== undefined && typeof se0[key] === typeof DEF[key]) settings[key] = se0[key]; }
+  if (se0 && se0.vs2 === undefined && settings.vstyle === 'smooth') settings.vstyle = 'natural'; // one-time switch to the new Natural default
   if (['auto', 'light', 'dark'].indexOf(settings.theme) < 0) settings.theme = 'auto';
   settings.teamCount = Math.min(GAME.maxP, Math.max(GAME.minP, settings.teamCount));
   var hostTheme = document.documentElement.getAttribute('data-theme');

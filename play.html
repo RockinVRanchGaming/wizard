@@ -376,18 +376,54 @@ details summary{font-weight:800;font-size:14px;color:var(--btn);cursor:pointer;m
 .kp .kpv{grid-column:1/4;min-height:52px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font:800 30px Nunito,sans-serif;font-variant-numeric:tabular-nums}
 .kp button{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:800 20px Nunito,sans-serif}
 .kp button:active{background:var(--btn);color:var(--btn-ink)}
+
+/* ===== round flow ===== */
+.board.flow{display:flex!important;flex-direction:column;gap:7px}
+.fl-tabs{display:flex;gap:6px;flex:none}
+.fl-tab{flex:1;text-align:center;padding:7px 4px;border-radius:10px;border:1px solid rgba(184,154,94,.35);color:var(--gold);font-weight:800;font-size:13px;white-space:nowrap}
+.fl-tab b{display:inline-flex;width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;background:rgba(184,154,94,.25);font-size:11px;margin-right:2px}
+.fl-tab.on{background:linear-gradient(180deg,#3a2f21,#1b150e);color:var(--gold2);border-color:var(--gold2)}.fl-tab.on b{background:var(--gold2);color:#1c140b}
+.fl-tab.dn{opacity:.55}
+.fl-list{flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:6px;justify-content:flex-start}
+.fl-row{flex:1 1 0;min-height:0;max-height:104px;display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(184,154,94,.45)}
+.fl-row.bidder{border-color:var(--gold2);box-shadow:0 0 12px rgba(224,194,124,.45);background:linear-gradient(180deg,#3a2c12,#120d05)}
+.fl-name{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.fl-name b{color:var(--gold2);font-size:clamp(16px,4.6vw,22px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-name small{color:var(--gold);font-size:12px;font-weight:700;opacity:1}
+.fl-ctl{display:flex;align-items:center;gap:5px;flex:none}
+.fl-ctl button{width:44px;height:46px;border-radius:12px;border:0;background:linear-gradient(150deg,#E8CB82,#A08040);color:#1c140b;font:800 24px/1 Nunito,sans-serif;padding:0}
+.fl-ctl .fl-v,.fl-bid{width:70px;height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.5);background:linear-gradient(180deg,#FBF4E2,#DDCFAE);color:#1c140b;font:800 24px/1 Nunito,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;font-variant-numeric:tabular-nums}
+.fl-v small,.fl-bid small{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-top:2px}
+.fl-bid{width:62px;flex:none;background:linear-gradient(180deg,#3a2f21,#1b150e);color:var(--gold2);border-color:var(--gold);font-size:15px}
+.fl-bid.on{background:linear-gradient(180deg,#A3231B,#6E130E);color:#F6E7C1;border-color:var(--gold2);font-size:20px}
+.fl-sc{min-width:76px;text-align:right;font:800 30px Nunito,sans-serif;color:#F3D88B;font-variant-numeric:tabular-nums}.fl-sc.neg{color:#ff8f80}
+.fl-info{flex:none;text-align:center;font-weight:700;font-size:14px;color:var(--cream);min-height:18px}.fl-info.warn{color:#ffb4a8}
+.fl-line{flex:none;text-align:center;font-style:italic;font-weight:700;color:var(--gold2);font-size:15px;padding:2px 8px;line-height:1.3}
+.fl-btns{flex:none;display:flex;gap:8px}
+.fl-btns button{flex:1;min-height:54px;border-radius:14px;font:800 19px Nunito,sans-serif;border:0}
+.fl-go{background:linear-gradient(180deg,#A3231B,#6E130E);color:#F6E7C1;border:1px solid var(--gold2)!important}
+.fl-go[aria-disabled="true"]{opacity:.45}
+.fl-btns .fl-alt{flex:0 0 auto;padding:0 16px;background:linear-gradient(180deg,#3a2f21,#1b150e);color:var(--gold2);border:1px solid var(--gold)!important}
+#bView{background:linear-gradient(150deg,#E8CB82,#A08040);color:#1c140b;display:inline-flex;align-items:center;justify-content:center}
+.board.flow.t5 .fl-row,.board.flow.t6 .fl-row{padding:2px 8px}.board.flow.t6 .fl-ctl button{height:40px}.board.flow.t6 .fl-v{height:46px}
 </style>
 <div class="app">
   <div class="topbar"><button type="button" class="gt back" id="bBack" hidden aria-label="Undo the last change"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button><div class="status" id="status" role="status" aria-live="polite"></div></div>
   <div class="info" id="info"></div>
   <div class="board" id="board"></div>
-  <div class="btns"><button class="rb bare" id="bSet" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gGear" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--set-a)"/><stop offset="1" style="stop-color:var(--set-b)"/></linearGradient></defs><path fill="url(#gGear)" stroke="url(#gGear)" stroke-width="1.1" stroke-linejoin="round" fill-rule="evenodd" d="M20.04 10.37 L22.32 10.70 L22.32 13.30 L20.04 13.63 A8.20 8.20 0 0 1 18.83 16.53 L20.21 18.38 L18.38 20.21 L16.53 18.83 A8.20 8.20 0 0 1 13.63 20.04 L13.30 22.32 L10.70 22.32 L10.37 20.04 A8.20 8.20 0 0 1 7.47 18.83 L5.62 20.21 L3.79 18.38 L5.17 16.53 A8.20 8.20 0 0 1 3.96 13.63 L1.68 13.30 L1.68 10.70 L3.96 10.37 A8.20 8.20 0 0 1 5.17 7.47 L3.79 5.62 L5.62 3.79 L7.47 5.17 A8.20 8.20 0 0 1 10.37 3.96 L10.70 1.68 L13.30 1.68 L13.63 3.96 A8.20 8.20 0 0 1 16.53 5.17 L18.38 3.79 L20.21 5.62 L18.83 7.47 A8.20 8.20 0 0 1 20.04 10.37 zM12 8.1a3.9 3.9 0 1 0 0 7.8 3.9 3.9 0 1 0 0-7.8z"/><path fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".7" d="M7.2 6.2A7.4 7.4 0 0 1 12 4.6"/></svg></button><button class="rb" id="bReset" type="button" aria-label="Reset the card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button><button class="rb" id="bSound" type="button" aria-label="Sound on or off" aria-pressed="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9z"/><path class="wv" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-linecap="round" stroke-width="2.2"/><path class="mx" d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke-linecap="round" stroke-width="2.4"/></svg></button><button class="rb" id="bRules" type="button" aria-label="Rules and scoring"><b>?</b></button></div>
+  <div class="btns"><button class="rb bare" id="bSet" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gGear" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--set-a)"/><stop offset="1" style="stop-color:var(--set-b)"/></linearGradient></defs><path fill="url(#gGear)" stroke="url(#gGear)" stroke-width="1.1" stroke-linejoin="round" fill-rule="evenodd" d="M20.04 10.37 L22.32 10.70 L22.32 13.30 L20.04 13.63 A8.20 8.20 0 0 1 18.83 16.53 L20.21 18.38 L18.38 20.21 L16.53 18.83 A8.20 8.20 0 0 1 13.63 20.04 L13.30 22.32 L10.70 22.32 L10.37 20.04 A8.20 8.20 0 0 1 7.47 18.83 L5.62 20.21 L3.79 18.38 L5.17 16.53 A8.20 8.20 0 0 1 3.96 13.63 L1.68 13.30 L1.68 10.70 L3.96 10.37 A8.20 8.20 0 0 1 5.17 7.47 L3.79 5.62 L5.62 3.79 L7.47 5.17 A8.20 8.20 0 0 1 10.37 3.96 L10.70 1.68 L13.30 1.68 L13.63 3.96 A8.20 8.20 0 0 1 16.53 5.17 L18.38 3.79 L20.21 5.62 L18.83 7.47 A8.20 8.20 0 0 1 20.04 10.37 zM12 8.1a3.9 3.9 0 1 0 0 7.8 3.9 3.9 0 1 0 0-7.8z"/><path fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".7" d="M7.2 6.2A7.4 7.4 0 0 1 12 4.6"/></svg></button><button class="rb" id="bReset" type="button" aria-label="Reset the card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button><button class="rb" id="bView" type="button" data-view="grid" aria-label="Overview of every round"></button><button class="rb" id="bSound" type="button" aria-label="Sound on or off" aria-pressed="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9z"/><path class="wv" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-linecap="round" stroke-width="2.2"/><path class="mx" d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke-linecap="round" stroke-width="2.4"/></svg></button><button class="rb" id="bRules" type="button" aria-label="Rules and scoring"><b>?</b></button></div>
 </div>
 <div class="scrim" id="scrim" hidden></div>
 <section class="sheet" id="rdSheet" aria-label="Score a round" hidden>
   <div class="sheet-inner">
     <div class="top"><div class="tt"><h2 id="rdTitle">Round</h2><small>Round score</small></div><div id="rdTotal">0</div><button class="x" type="button" data-close aria-label="Close">&#10005;</button></div>
     <div id="rdBody"></div>
+  </div>
+</section>
+<section class="sheet" id="kpSheet" aria-label="Type a number" hidden>
+  <div class="sheet-inner">
+    <div class="top"><h2 id="kpTitle">Enter</h2><button class="x" type="button" data-close aria-label="Close">&#10005;</button></div>
+    <div id="kpBody"></div>
   </div>
 </section>
 <section class="sheet" id="teamSheet" aria-label="Names" hidden>
@@ -466,6 +502,29 @@ var GAME = {
   kind: function (e, r, t, sc) { if (e.bid !== e.took) return Math.abs(e.bid - e.took) >= 3 ? 'ouch' : 'fail'; if (e.took >= 4 || (e.bid === 0 && r >= 5)) return 'big'; return 'normal'; },
   stepText: function (k, v) { if (k === 'teamCount') return v + ' players'; if (k === 'fixedRounds') return v + ' rounds'; return v + ' pts'; },
   teamNote: function (c) { return 'Full game: ' + Math.floor(60 / c.N()) + ' rounds with ' + c.N() + ' players (60 cards).'; },
+  flow: { phases: [['bid', 'Bids', 'Step 1: everyone calls a bid, then lock them in'], ['take', 'Takes', 'Step 2: play the hand, then enter tricks taken']] },
+  flowLabel: function (f) { return f === 'bid' ? 'bid' : 'tricks taken'; },
+  flowMax: function (f, c) { return c.r + 1; },
+  flowRow: function (t, c, ui) { return c.phase === 'bid' ? ui.ctl(t, 'bid', 'bid') : ui.ctl(t, 'took', 'took'); },
+  flowSub: function (t, e, c, ctx) {
+    if (c.phase !== 'done') { var s = GAME.score(e, c.r, t, ctx); return 'bid ' + e.bid + ' &middot; ' + (s > 0 ? '+' : '') + s + ' if it holds'; }
+    return 'bid ' + e.bid + ', took ' + e.took + (e.bid === e.took ? ' \u2713' : '');
+  },
+  flowInfo: function (c, ctx) {
+    var n = c.r + 1, T = ctx.N(), sb = 0, st = 0, t;
+    for (t = 0; t < T; t++) { sb += c.e[t].bid; st += c.e[t].took; }
+    if (c.phase === 'bid') return { ok: true, txt: 'Bids add up to <b>' + sb + '</b> for ' + n + ' trick' + (n > 1 ? 's' : '') + (sb > n ? ' &middot; overbid by ' + (sb - n) : sb < n ? ' &middot; underbid by ' + (n - sb) : ' &middot; dead even') };
+    return st === n ? { ok: true, txt: 'All ' + n + ' trick' + (n > 1 ? 's' : '') + ' counted' } : { ok: false, txt: 'Tricks add up to ' + st + '. They need to total ' + n + '.' };
+  },
+  flowLockSay: function (c, ctx) { var n = c.r + 1, sb = 0; for (var t = 0; t < ctx.N(); t++) sb += c.e[t].bid; return 'Bids are in. ' + sb + ' for ' + n + '.' + (sb > n ? ' Somebody is going down.' : ''); },
+  flowCallout: function (c, ctx) {
+    var made = [], miss = [], t;
+    for (t = 0; t < ctx.N(); t++) (c.e[t].bid === c.e[t].took ? made : miss).push(ctx.G.names[t]);
+    var j = function (a) { return a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0]; };
+    if (!miss.length) return 'Everybody made it';
+    if (!made.length) return 'Nobody made it';
+    return j(made) + ' made it. ' + j(miss) + ' missed';
+  },
   rules: function (c) {
     var s = c.settings;
     return '<h3>The deal</h3><p>60 cards: 1 to 13 in four colors, plus 4 Wizards and 4 Jesters. Round 1 deals one card each, round 2 deals two, and so on until the deck runs out. Trump is the top card of the leftover pile (a Wizard: dealer picks; a Jester: no trump).</p>' +
@@ -686,6 +745,10 @@ var GAME = {
   var armed = false, armT = null;
   function cellText(e, r, t) { return GAME.cell ? GAME.cell(e, r, t, ctx) : num(score(e, r, t)); }
   function render() {
+    if (FLOW) {
+      var fb = $('bView'); if (fb) { fb.setAttribute('data-view', view === 'flow' ? 'grid' : 'flow'); fb.setAttribute('aria-label', view === 'flow' ? 'Overview of every round' : 'Back to the round'); fb.innerHTML = view === 'flow' ? GRID_ICON : ROUND_ICON; }
+      if (view === 'flow') { renderFlow(); renderTop(flowCur().r); return; }
+    }
     var T = N(), R = rowCount(), cur = currentRound(), over = gameOver(), w = winners(), t, r, h = '';
     h += '<div class="hdr"></div>';
     for (t = 0; t < T; t++) h += '<button type="button" class="th" data-teams="1" aria-label="' + WORD + ' ' + (t + 1) + ': ' + esc(G.names[t]) + '. Tap to rename">' + esc(G.names[t]) + '</button>';
@@ -694,7 +757,7 @@ var GAME = {
       h += '<div class="rh' + (r === cur && !over ? ' now' : '') + '"><b>' + lab.b + '</b>' + (lab.s ? '<small>' + lab.s + '</small>' : '') + '</div>';
       for (t = 0; t < T; t++) {
         var e = entry(r, t), sc = e ? score(e, r, t) : 0;
-        h += '<button type="button" class="cell' + (e ? ' done' : '') + (e && sc < 0 ? ' neg' : '') + (e && GAME.hot && GAME.hot(e, r, t, ctx) ? ' hot' : '') + (r === cur && !over && !e ? ' now' : '') + '" data-r="' + r + '" data-t="' + t + '" aria-label="' + esc(G.names[t]) + ' round ' + (r + 1) + (e ? ': ' + sc + ' points' : ': not scored') + '">' + (e ? cellText(e, r, t) : (r === cur && !over ? '+' : '')) + '</button>';
+        h += '<button type="button" class="cell' + (e ? ' done' : '') + (e && sc < 0 ? ' neg' : '') + (e && GAME.hot && GAME.hot(e, r, t, ctx) ? ' hot' : '') + (r === cur && !over && !e ? ' now' : '') + '" data-r="' + r + '" data-t="' + t + '" aria-label="' + esc(G.names[t]) + ' round ' + (r + 1) + (e ? ': ' + sc + ' points' : ': not scored') + '">' + (e ? cellText(e, r, t) : (r === cur && !over && !FLOW ? '+' : '')) + '</button>';
       }
     }
     h += '<div class="rh tot"><b>TOTAL</b></div>';
@@ -704,6 +767,12 @@ var GAME = {
     }
     var b = $('board'); b.style.gridTemplateColumns = (GAME.rowW || '62px') + ' repeat(' + T + ', minmax(0, 1fr))'; b.style.gridTemplateRows = 'auto repeat(' + R + ', minmax(0, 1fr)) auto';
     b.className = 'board t' + T + (R > 12 ? ' many' : '') + (R > 18 ? ' lots' : ''); b.innerHTML = h;
+    renderTop(FLOW ? flowCur().r : cur);
+  }
+  var GRID_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
+  var ROUND_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg>';
+  function renderTop(cur) {
+    var over = gameOver(), w = winners();
     var st = $('status');
     if (over) {
       st.className = 'status over';
@@ -711,6 +780,8 @@ var GAME = {
     } else {
       st.className = 'status';
       var s = GAME.status(cur, ctx);
+      if (FLOW && view === 'flow') { var fc = flowCur(); s.s = fc.phase === 'bid' ? GAME.flow.phases[0][2] : fc.phase === 'take' ? GAME.flow.phases[1][2] : 'Scored. Check the board, then go on.'; }
+      if (FLOW && view === 'grid') s.s = 'Overview \u00B7 tap a box to fix a score';
       st.innerHTML = '<span class="s1"><b>' + s.b + '</b>' + (s.t ? ' &middot; ' + s.t : '') + '</span>' + (s.s ? '<small>' + s.s + '</small>' : '');
     }
     $('bBack').hidden = !hist.length;
@@ -799,6 +870,116 @@ var GAME = {
     draft.e[f] = v; $('rdTotal').textContent = num(draftScore());
   });
 
+
+  /* ---------- round flow (bids first, takes after, then score) ---------- */
+  var FLOW = !!GAME.flow, view = 'flow', kpS = null;
+  function flowCur() {
+    var r = doneRounds(), c = G.x.cur;
+    var ok = c && typeof c.r === 'number' && Array.isArray(c.e) && ((c.phase === 'done' && c.r === r - 1) || (c.phase !== 'done' && c.r === r));
+    if (!ok) c = G.x.cur = { r: r, phase: 'bid', e: [] };
+    while (c.e.length < MAXT) c.e.push(GAME.blank(c.r, c.e.length, ctx));
+    return c;
+  }
+  var fui = {
+    ctl: function (t, f, label) {
+      var c = flowCur(), v = c.e[t][f];
+      return '<div class="fl-ctl"><button type="button" data-ff="' + t + ':' + f + '" data-d="-1" aria-label="Less ' + label + '">&minus;</button><button type="button" class="fl-v" data-fk="' + t + ':' + f + '" aria-label="' + esc(G.names[t]) + ' ' + label + ' ' + v + '. Tap to type">' + num(v) + '<small>' + label + '</small></button><button type="button" data-ff="' + t + ':' + f + '" data-d="1" aria-label="More ' + label + '">+</button></div>';
+    }
+  };
+  function fstep(f) { return GAME.flowStep ? GAME.flowStep(f, ctx) : 1; }
+  function fmax(f, c) { var L = GAME.fields[f] || [0, 9999, 1], m = GAME.flowMax ? GAME.flowMax(f, c, ctx) : L[1]; return Math.min(L[1], m); }
+  function setF(t, f, v) {
+    var c = flowCur(), L = GAME.fields[f] || [0, 9999, 1];
+    c.e[t][f] = Math.min(fmax(f, c), Math.max(L[0], v));
+    if (GAME.flowAfter) GAME.flowAfter(t, f, c, ctx);
+    store(K_STATE, G);
+  }
+  function renderFlow() {
+    var c = flowCur(), T = N(), ph = c.phase, t, h = '', over = gameOver();
+    var P = GAME.flow.phases, idx = ph === 'done' ? 2 : (ph === 'take' ? 1 : 0);
+    h += '<div class="fl-tabs">';
+    [P[0][1], P[1][1], 'Scores'].forEach(function (x, i) { h += '<div class="fl-tab' + (i === idx ? ' on' : (i < idx ? ' dn' : '')) + '"><b>' + (i + 1) + '</b> ' + x + '</div>'; });
+    h += '</div><div class="fl-list">';
+    for (t = 0; t < T; t++) {
+      var e = c.e[t], sub, right;
+      if (ph === 'done') {
+        var de = entry(c.r, t) || e, sc = score(de, c.r, t);
+        sub = (GAME.flowSub ? GAME.flowSub(t, de, c, ctx) + ' &middot; ' : '') + num(total(t)) + ' total';
+        right = '<div class="fl-sc' + (sc < 0 ? ' neg' : '') + '">' + (sc > 0 ? '+' : '') + num(sc) + '</div>';
+      } else {
+        sub = GAME.flowSub && ph === 'take' ? GAME.flowSub(t, e, c, ctx) : num(total(t)) + ' total';
+        right = GAME.flowRow(t, c, fui, ctx);
+      }
+      var cls = GAME.flowCls ? GAME.flowCls(t, c, ctx) : '';
+      h += '<div class="fl-row' + cls + '"><div class="fl-name"><b>' + esc(G.names[t]) + '</b><small>' + sub + '</small></div>' + right + '</div>';
+    }
+    h += '</div>';
+    if (ph === 'done') {
+      if (c.line) h += '<div class="fl-line">&ldquo;' + esc(c.line) + '&rdquo;</div>';
+      h += over ? '<div class="fl-btns"><button type="button" class="fl-alt" data-view="grid">Overview</button><button type="button" class="fl-go" id="newGame">New game</button></div>' :
+        '<div class="fl-btns"><button type="button" class="fl-alt" data-flow="unscore">Fix</button><button type="button" class="fl-go" data-flow="nextround">Next ' + (GAME.word2 || 'round') + ' &rsaquo;</button></div>';
+    } else {
+      var info = GAME.flowInfo(c, ctx);
+      h += '<div class="fl-info' + (info.ok ? '' : ' warn') + '">' + info.txt + '</div>';
+      if (ph === 'bid') h += '<div class="fl-btns"><button type="button" class="fl-go" data-flow="lock"' + (info.ok ? '' : ' aria-disabled="true"') + '>Lock in ' + P[0][1].toLowerCase() + ' &rsaquo;</button></div>';
+      else h += '<div class="fl-btns"><button type="button" class="fl-alt" data-flow="back">&lsaquo; ' + P[0][1] + '</button><button type="button" class="fl-go" data-flow="score"' + (info.ok ? '' : ' aria-disabled="true"') + '>Score it</button></div>';
+    }
+    var b = $('board'); b.style.gridTemplateColumns = ''; b.style.gridTemplateRows = ''; b.className = 'board flow t' + T; b.innerHTML = h;
+  }
+  var KORDER = ['big', 'ouch', 'fail'];
+  function scoreRound() {
+    var c = flowCur(), T = N(), t, r = c.r, info = GAME.flowInfo(c, ctx), wasOver = gameOver();
+    if (!info.ok) { note(info.txt.replace(/<[^>]+>/g, '')); buzz(30); return; }
+    snap();
+    while (G.rounds.length <= r) G.rounds.push([]);
+    var kinds = [];
+    for (t = 0; t < T; t++) { G.rounds[r][t] = clone(c.e[t]); kinds.push(GAME.kind ? GAME.kind(c.e[t], r, t, score(c.e[t], r, t), ctx) : 'normal'); }
+    c.phase = 'done';
+    var base = GAME.flowCallout ? GAME.flowCallout(c, ctx) : '', kind = 'normal', isOver = gameOver();
+    var hits = kinds.filter(function (k) { return KORDER.indexOf(k) >= 0; });
+    if (hits.length) kind = hits[Math.floor(Math.random() * hits.length)];
+    if (isOver && !wasOver) { var w = winners(); base += '. Game over. ' + w.list.map(function (i) { return G.names[i]; }).join(' and ') + ' win' + (w.list.length > 1 ? '' : 's') + ' with ' + w.best; kind = 'end'; }
+    var line = '';
+    if (settings.banter) line = (kind === 'normal' && Math.random() < 0.2) ? nextLine('teen') : nextLine(kind);
+    c.line = line ? ent(line).t : '';
+    store(K_STATE, G); render(); buzz(20); tone(760, 0.08, 'triangle'); setTimeout(function () { tone(990, 0.12, 'triangle'); }, 110);
+    speakWith(base, line);
+  }
+  function flowTap(b) {
+    var a, c;
+    if (b.hasAttribute('data-view')) { view = b.getAttribute('data-view'); render(); tone(600, 0.05, 'triangle'); return true; }
+    if (!FLOW) return false;
+    if (b.hasAttribute('data-ff')) { a = b.getAttribute('data-ff').split(':'); var t = +a[0], f = a[1], dd = +b.getAttribute('data-d'); setF(t, f, flowCur().e[t][f] + dd * fstep(f)); render(); buzz(); tone(dd > 0 ? 700 : 480, 0.05, 'triangle'); return true; }
+    if (b.hasAttribute('data-fk')) { a = b.getAttribute('data-fk').split(':'); openKp(+a[0], a[1]); return true; }
+    if (b.hasAttribute('data-fkp') && kpS) {
+      var d = b.getAttribute('data-fkp'), v = kpS.v;
+      if (d === 'ok') { setF(kpS.t, kpS.f, kpS.v); hide(); kpS = null; render(); buzz(); tone(760, 0.06, 'triangle'); return true; }
+      if (d === 'clr') v = 0; else if (d === 'bs') v = Math.floor(v / 10); else { if (!kpS.fresh) v = 0; v = v * 10 + +d; }
+      kpS.fresh = true; kpS.v = Math.min(fmax(kpS.f, flowCur()), v); paintKp(); buzz(); tone(660, 0.04, 'triangle'); return true;
+    }
+    if (b.hasAttribute('data-flow')) {
+      a = b.getAttribute('data-flow'); c = flowCur();
+      if (a === 'lock') { var inf = GAME.flowInfo(c, ctx); if (!inf.ok) { note(inf.txt.replace(/<[^>]+>/g, '')); buzz(30); return true; } snap(); c.phase = 'take'; store(K_STATE, G); render(); buzz(15); tone(700, 0.07, 'triangle'); if (GAME.flowLockSay) say(GAME.flowLockSay(c, ctx)); return true; }
+      if (a === 'back') { c.phase = 'bid'; store(K_STATE, G); render(); tone(480, 0.05, 'triangle'); return true; }
+      if (a === 'score') { scoreRound(); return true; }
+      if (a === 'unscore') { snap(); if (G.rounds[c.r]) G.rounds[c.r] = []; c.phase = 'take'; c.line = ''; G.x.cur = c; store(K_STATE, G); render(); tone(480, 0.05, 'triangle'); return true; }
+      if (a === 'nextround') { snap(); G.x.cur = { r: c.r + 1, phase: 'bid', e: [] }; store(K_STATE, G); render(); buzz(15); tone(620, 0.07, 'triangle'); return true; }
+    }
+    if (GAME.flowTap && GAME.flowTap(b, flowCur(), ctx, { openKp: openKp, setF: setF })) { store(K_STATE, G); render(); return true; }
+    return false;
+  }
+  function openKp(t, f) {
+    var c = flowCur(); kpS = { t: t, f: f, v: c.e[t][f], fresh: false };
+    $('kpTitle').textContent = G.names[t] + ': ' + (GAME.flowLabel ? GAME.flowLabel(f, ctx) : f);
+    paintKp(); show('kpSheet');
+  }
+  function paintKp() {
+    var h = '<div class="kp"><output class="kpv" aria-live="polite">' + num(kpS.v) + '</output>';
+    '7 8 9 4 5 6 1 2 3'.split(' ').forEach(function (d) { h += '<button type="button" data-fkp="' + d + '">' + d + '</button>'; });
+    h += '<button type="button" data-fkp="clr" aria-label="Clear">C</button><button type="button" data-fkp="0">0</button><button type="button" data-fkp="bs" aria-label="Backspace">&#9003;</button></div><button type="button" class="go" data-fkp="ok">Set</button>';
+    $('kpBody').innerHTML = h;
+  }
+
   /* ---------- names sheet ---------- */
   function paintTeams() {
     var h = '<div class="list"><div class="li"><span>' + WORD + 's</span><div class="step"><button type="button" data-st="teamCount" data-d="-1" aria-label="Fewer">&minus;</button><output>' + N() + '</output><button type="button" data-st="teamCount" data-d="1" aria-label="More">+</button></div></div>';
@@ -838,7 +1019,7 @@ var GAME = {
   function hideToast() { $('toast').hidden = true; if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; } }
   function newGame() {
     undoSnap = JSON.stringify({ G: G, hist: hist });
-    var names = G.names.slice(); G = blankGame(); G.names = names; ctx.G = G; hist = []; store(K_HIST, hist); store(K_STATE, G); render(); buzz(20); tone(300, 0.12, 'sine');
+    var names = G.names.slice(); G = blankGame(); G.names = names; ctx.G = G; view = 'flow'; hist = []; store(K_HIST, hist); store(K_STATE, G); render(); buzz(20); tone(300, 0.12, 'sine');
     $('toastmsg').textContent = 'New game'; $('toast').hidden = false; if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 3000);
   }
 
@@ -861,6 +1042,8 @@ var GAME = {
     if (b.hasAttribute('data-close')) { hide(); return; }
     if (b.hasAttribute('data-open')) { var tgt = b.getAttribute('data-open'); if (tgt === 'ruleSheet') paintRules(); if (tgt === 'setSheet') paintSettings(); show(tgt); return; }
     if (b.hasAttribute('data-teams')) { paintTeams(); show('teamSheet'); return; }
+    if (flowTap(b)) return;
+    if (FLOW && b.hasAttribute('data-r') && b.classList.contains('cell') && !entry(+b.getAttribute('data-r'), +b.getAttribute('data-t'))) { view = 'flow'; render(); return; }
     if (b.hasAttribute('data-r') && b.classList.contains('cell')) { openRound(+b.getAttribute('data-r'), +b.getAttribute('data-t')); return; }
     if (b.hasAttribute('data-f') && draft) { stepField(b.getAttribute('data-f'), +b.getAttribute('data-d')); return; }
     if (b.hasAttribute('data-fs') && draft) { draft.e[b.getAttribute('data-fs')] = +b.getAttribute('data-v'); paintRound(); buzz(); tone(640, 0.05, 'triangle'); return; }

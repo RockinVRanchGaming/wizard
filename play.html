@@ -1,7 +1,11 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wizard"><meta name="theme-color" content="#0e0b09">
 <link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest">
-<style>html{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}</style>
+<style>html{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}
+.bk-name{display:flex;gap:8px;align-items:center}.bk-name input{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:800 18px var(--font);padding:0 12px;min-width:0}
+.bk-save{min-height:46px;border-radius:12px;background:var(--gold,#B89A5E);color:#1a1208;font-weight:800;font-size:16px;border:0;padding:0 18px}
+.bk-note{font-size:14px;color:var(--muted);line-height:1.45}
+</style>
 <title>Wizard Score Card</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
 </head><body>
@@ -528,6 +532,9 @@ details summary{font-weight:800;font-size:14px;color:var(--btn);cursor:pointer;m
     
     <div class="cap2">Game</div><div class="list"><div class="li"><span>Players<small class="hint2">3 to 6</small></span><div class="step"><button type="button" data-st="teamCount" data-d="-1" aria-label="Less Players">&minus;</button><output id="v_teamCount">0</output><button type="button" data-st="teamCount" data-d="1" aria-label="More Players">+</button></div></div><div class="li"><span>Rounds</span><div class="seg" role="group" aria-label="Rounds"><button type="button" data-sv="roundsMode:full" aria-pressed="false">Full deck</button><button type="button" data-sv="roundsMode:fixed" aria-pressed="false">Set number</button></div></div><div class="li"><span>Rounds if set<small class="hint2">only when Set number is on</small></span><div class="step"><button type="button" data-st="fixedRounds" data-d="-1" aria-label="Less Rounds if set">&minus;</button><output id="v_fixedRounds">0</output><button type="button" data-st="fixedRounds" data-d="1" aria-label="More Rounds if set">+</button></div></div></div>
     <div class="cap2">Scoring</div><div class="list"><div class="li"><span>Bonus for making your bid</span><div class="step"><button type="button" data-st="madeBonus" data-d="-1" aria-label="Less Bonus for making your bid">&minus;</button><output id="v_madeBonus">0</output><button type="button" data-st="madeBonus" data-d="1" aria-label="More Bonus for making your bid">+</button></div></div><div class="li"><span>Per trick when made</span><div class="step"><button type="button" data-st="perTrick" data-d="-1" aria-label="Less Per trick when made">&minus;</button><output id="v_perTrick">0</output><button type="button" data-st="perTrick" data-d="1" aria-label="More Per trick when made">+</button></div></div><div class="li"><span>Penalty per trick off</span><div class="step"><button type="button" data-st="missPenalty" data-d="-1" aria-label="Less Penalty per trick off">&minus;</button><output id="v_missPenalty">0</output><button type="button" data-st="missPenalty" data-d="1" aria-label="More Penalty per trick off">+</button></div></div></div>
+    <div class="cap2">Record book</div>
+    <div class="list"><div class="li"><span>Record book<small class="hint2" id="bkLine"></small></span><button class="verbtn" type="button" id="openBook" style="padding:6px 12px;min-height:40px">Open &rsaquo;</button></div>
+    <div class="li"><span>Your name on the score cards<small class="hint2" id="bkOwnerLine"></small></span><button class="verbtn" type="button" id="bkEditName" style="padding:6px 12px;min-height:40px">Set</button></div></div>
     <div class="cap2">Play</div>
     <div class="list">
       <div class="li"><span>Dark mode</span><div class="seg" role="group" aria-label="Dark mode"><button type="button" data-theme-set="auto">Auto</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
@@ -542,6 +549,13 @@ details summary{font-weight:800;font-size:14px;color:var(--btn);cursor:pointer;m
     </div>
     <button class="danger" id="clearAll" type="button">Clear all scores</button>
     <button class="resetset" id="resetSet" type="button">Reset settings</button>
+  </div>
+</section>
+<section class="sheet" id="nameSheet" aria-label="Your name" hidden>
+  <div class="sheet-inner">
+    <div class="top"><h2>What should we call you?</h2><button class="x" type="button" data-close aria-label="Close">&#10005;</button></div>
+    <p class="bk-note" style="margin:0">Finished games get saved to the record book on this phone. Your name goes in player 1 by default. Change it any time in Settings.</p>
+    <div class="bk-name"><input id="bkName" maxlength="20" placeholder="Your name" autocomplete="off"><button class="bk-save" id="bkNameSave" type="button">Save</button></div>
   </div>
 </section>
 <div class="toast" id="toast" role="status" hidden><span id="toastmsg"></span><button type="button" id="undo">Undo</button></div>
@@ -621,6 +635,171 @@ var GAME = {
 };
 
 /* Rockin' V round-based score card engine. The game file defines GAME before this runs. */
+/* Rockin' V Record Book - shared data layer (rv-records-v1). ES5 on purpose; old phones play too. */
+var RVBook = (function () {
+  var K = 'rv-records-v1', KO = 'rv-owner-v1', KR = 'rv-roster-v1';
+  function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function norm(n) { return String(n || '').trim().replace(/\s+/g, ' ').slice(0, 20); }
+  function key(n) { return norm(n).toLowerCase(); }
+
+  function db() {
+    var d = load(K);
+    if (!d || d.v !== 1 || !d.players || !Array.isArray(d.games)) d = { v: 1, players: {}, games: [] };
+    return d;
+  }
+  function save(d) { return store(K, d); }
+
+  /* owner: the person whose phone this is */
+  function owner() { var o = load(KO); return o && o.name ? o : null; }
+  function setOwner(name) {
+    name = norm(name); if (!name) return null;
+    var d = db(), o = owner(), pid = o ? o.pid : null;
+    if (pid && d.players[pid]) { rename(pid, name, d); } else { pid = ensurePlayer(d, name); save(d); }
+    var no = { pid: pid, name: name }; store(KO, no); return no;
+  }
+
+  /* players */
+  function findPid(d, name) {
+    var k = key(name), id; if (!k) return null;
+    for (id in d.players) { var p = d.players[id]; if (key(p.name) === k) return id; if (p.aliases && p.aliases.some(function (a) { return key(a) === k; })) return id; }
+    return null;
+  }
+  function ensurePlayer(d, name) {
+    var pid = findPid(d, name); if (pid) return pid;
+    pid = 'p' + uid(); d.players[pid] = { name: norm(name), aliases: [], created: new Date().toISOString() }; return pid;
+  }
+  function rename(pid, name, d0) {
+    var d = d0 || db(), p = d.players[pid]; name = norm(name); if (!p || !name) return false;
+    if (key(p.name) !== key(name) && p.aliases.indexOf(p.name) < 0) p.aliases.push(p.name);
+    p.name = name; if (!d0) save(d);
+    var o = owner(); if (o && o.pid === pid) store(KO, { pid: pid, name: name });
+    return true;
+  }
+  function merge(keep, drop) {
+    var d = db(), a = d.players[keep], b = d.players[drop]; if (!a || !b || keep === drop) return false;
+    a.aliases = (a.aliases || []).concat([b.name], b.aliases || []).filter(function (x, i, arr) { return key(x) !== key(a.name) && arr.indexOf(x) === i; });
+    d.games.forEach(function (g) { g.players.forEach(function (pl) { if (pl.pid === drop) pl.pid = keep; }); });
+    delete d.players[drop];
+    var o = owner(); if (o && o.pid === drop) store(KO, { pid: keep, name: a.name });
+    return save(d);
+  }
+  function removePlayer(pid) {
+    var d = db(); if (!d.players[pid]) return false;
+    var used = d.games.some(function (g) { return g.players.some(function (pl) { return pl.pid === pid; }); });
+    if (used) return false; delete d.players[pid]; return save(d);
+  }
+
+  /* games */
+  function decideWinners(players, lowWins) {
+    var explicit = players.some(function (p) { return typeof p.won === 'boolean'; });
+    if (explicit) { players.forEach(function (p) { p.won = p.won === true; }); return; }
+    var best = null; players.forEach(function (p) { if (typeof p.score !== 'number') return; if (best === null || (lowWins ? p.score < best : p.score > best)) best = p.score; });
+    players.forEach(function (p) { p.won = (best !== null && p.score === best); });
+  }
+  function addGame(rec) {
+    /* rec: { id?, game:'qwixx', title:'Qwixx', lowWins?:bool, at?:ISO, players:[{name, score}], meta?:{} } */
+    var d = db(), id = rec.id || ('g' + uid());
+    var i; for (i = 0; i < d.games.length; i++) if (d.games[i].id === id) return d.games[i];
+    var players = (rec.players || []).filter(function (p) { return p && norm(p.name); }).map(function (p) {
+      var o = { pid: ensurePlayer(d, p.name), name: norm(p.name), score: (typeof p.score === 'number' && isFinite(p.score)) ? p.score : null }; if (typeof p.won === 'boolean') o.won = p.won; return o;
+    });
+    if (!players.length) return null;
+    decideWinners(players, !!rec.lowWins);
+    var g = { id: id, game: String(rec.game || 'game'), title: String(rec.title || rec.game || 'Game'), lowWins: !!rec.lowWins, at: rec.at || new Date().toISOString(), players: players, meta: rec.meta || {} };
+    d.games.push(g); if (d.games.length > 5000) d.games = d.games.slice(-5000);
+    save(d); return g;
+  }
+  function updateGame(id, patch) {
+    var d = db(), g = null, i; for (i = 0; i < d.games.length; i++) if (d.games[i].id === id) g = d.games[i];
+    if (!g) return null;
+    if (patch.players) {
+      g.players = patch.players.filter(function (p) { return p && norm(p.name); }).map(function (p) {
+        var o = { pid: ensurePlayer(d, p.name), name: norm(p.name), score: (typeof p.score === 'number' && isFinite(p.score)) ? p.score : null }; if (typeof p.won === 'boolean') o.won = p.won; return o;
+      });
+    }
+    if (patch.at) g.at = patch.at; if (patch.meta) g.meta = patch.meta;
+    decideWinners(g.players, g.lowWins); save(d); return g;
+  }
+  function removeGame(id) { var d = db(), n = d.games.length; d.games = d.games.filter(function (g) { return g.id !== id; }); if (d.games.length === n) return false; return save(d); }
+  function games() { return db().games.slice().sort(function (a, b) { return a.at < b.at ? 1 : -1; }); }
+  function players() { var d = db(), out = [], id; for (id in d.players) out.push({ pid: id, name: d.players[id].name, aliases: d.players[id].aliases || [] }); return out; }
+  function nameOf(pid) { var d = db(); return d.players[pid] ? d.players[pid].name : '?'; }
+
+  /* stats */
+  function stats(pid, gameFilter) {
+    var s = { games: 0, wins: 0, best: null, worst: null, total: 0, scored: 0, streak: 0, bestStreak: 0, last: null, byGame: {} };
+    var gs = db().games.slice().sort(function (a, b) { return a.at < b.at ? -1 : 1; });
+    gs.forEach(function (g) {
+      if (gameFilter && g.game !== gameFilter) return;
+      var me = null; g.players.forEach(function (p) { if (p.pid === pid) me = p; }); if (!me) return;
+      s.games++; s.last = g.at;
+      var bg = s.byGame[g.game] || (s.byGame[g.game] = { title: g.title, games: 0, wins: 0, best: null, lowWins: g.lowWins });
+      bg.games++;
+      if (me.won && g.players.length > 1) { s.wins++; bg.wins++; s.streak++; if (s.streak > s.bestStreak) s.bestStreak = s.streak; } else if (g.players.length > 1) s.streak = 0;
+      if (typeof me.score === 'number') {
+        s.total += me.score; s.scored++;
+        if (s.best === null || (g.lowWins ? me.score < s.best : me.score > s.best)) s.best = me.score;
+        if (s.worst === null || (g.lowWins ? me.score > s.worst : me.score < s.worst)) s.worst = me.score;
+        if (bg.best === null || (g.lowWins ? me.score < bg.best : me.score > bg.best)) bg.best = me.score;
+      }
+    });
+    s.avg = s.scored ? Math.round(s.total / s.scored * 10) / 10 : null;
+    s.winPct = s.games ? Math.round(s.wins / s.games * 100) : 0;
+    return s;
+  }
+  function headToHead(a, b) {
+    var r = { games: 0, aWins: 0, bWins: 0, ties: 0 };
+    db().games.forEach(function (g) {
+      var pa = null, pb = null; g.players.forEach(function (p) { if (p.pid === a) pa = p; if (p.pid === b) pb = p; });
+      if (!pa || !pb || typeof pa.score !== 'number' || typeof pb.score !== 'number') return;
+      r.games++; if (pa.score === pb.score) r.ties++; else if ((pa.score > pb.score) !== g.lowWins) r.aWins++; else r.bWins++;
+    });
+    return r;
+  }
+
+  /* suggestions: who you usually play with */
+  function suggest(limit) {
+    var score = {}, names = {}, now = Date.now(), d = db(), o = owner();
+    d.games.forEach(function (g) {
+      var age = (now - Date.parse(g.at)) / 864e5, w = 1 + 30 / (1 + age);
+      g.players.forEach(function (p) { if (o && p.pid === o.pid) return; score[p.pid] = (score[p.pid] || 0) + w; names[p.pid] = nameOf(p.pid); });
+    });
+    var roster = load(KR); if (Array.isArray(roster)) roster.forEach(function (n) { var pid = findPid(d, n); if (pid) { if (o && pid === o.pid) return; score[pid] = (score[pid] || 0) + 0.5; names[pid] = nameOf(pid); } else if (norm(n) && (!o || key(n) !== key(o.name))) { score['raw:' + key(n)] = 0.4; names['raw:' + key(n)] = norm(n); } });
+    var out = Object.keys(score).sort(function (x, y) { return score[y] - score[x]; }).map(function (k) { return names[k]; });
+    return out.slice(0, limit || 8);
+  }
+  function lastTable(game) {
+    var gs = games(), i; for (i = 0; i < gs.length; i++) if (!game || gs[i].game === game) return gs[i].players.map(function (p) { return nameOf(p.pid); });
+    return null;
+  }
+
+  /* export */
+  function csv() {
+    var rows = [['Date', 'Game', 'Player', 'Score', 'Won', 'Players in game', 'Game id']];
+    games().forEach(function (g) { g.players.forEach(function (p) { rows.push([g.at.slice(0, 10), g.title, nameOf(p.pid), p.score === null ? '' : p.score, p.won && g.players.length > 1 ? 'yes' : '', g.players.length, g.id]); }); });
+    return rows.map(function (r) { return r.map(function (c) { c = String(c); return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(','); }).join('\r\n');
+  }
+  function exportJSON() { return JSON.stringify({ book: db(), owner: owner(), exported: new Date().toISOString() }); }
+  function importJSON(txt) {
+    var o; try { o = JSON.parse(txt); } catch (e) { return { ok: false, err: 'Not a record book file.' }; }
+    var src = o && o.book && Array.isArray(o.book.games) ? o.book : null; if (!src) return { ok: false, err: 'Not a record book file.' };
+    var added = 0; src.games.forEach(function (g) {
+      var before = db().games.length;
+      addGame({ id: g.id, game: g.game, title: g.title, lowWins: g.lowWins, at: g.at, meta: g.meta, players: g.players.map(function (p) { return { name: (src.players[p.pid] || {}).name || p.name, score: p.score }; }) });
+      if (db().games.length > before) added++;
+    });
+    return { ok: true, added: added, skipped: src.games.length - added };
+  }
+
+  function count() { return db().games.length; }
+  function seenToast() { return !!load('rv-book-toast-v1'); } function markToast() { store('rv-book-toast-v1', 1); }
+
+  return { K: K, owner: owner, setOwner: setOwner, addGame: addGame, updateGame: updateGame, removeGame: removeGame, games: games, players: players, nameOf: nameOf,
+    rename: rename, merge: merge, removePlayer: removePlayer, stats: stats, headToHead: headToHead, suggest: suggest, lastTable: lastTable, csv: csv, exportJSON: exportJSON, importJSON: importJSON, count: count, seenToast: seenToast, markToast: markToast, norm: norm };
+})();
+
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var ID = GAME.id;
@@ -966,7 +1145,7 @@ var GAME = {
     store(K_STATE, G); hide(); render(); buzz(15); tone(sc < 0 ? 420 : 760, 0.08, 'triangle');
     var base = GAME.callout ? GAME.callout(e, r, t, sc, ctx) : G.names[t] + ', ' + (sc < 0 ? 'minus ' + Math.abs(sc) : sc);
     var kind = GAME.kind ? GAME.kind(e, r, t, sc, ctx) : (sc < 0 ? 'fail' : 'normal');
-    if (isOver && !wasOver) { var w = winners(); base += '. Game over. ' + G.names[w.list[0]] + ' wins with ' + w.best; kind = 'end'; }
+    if (isOver && !wasOver) { bookSave(false); var w = winners(); base += '. Game over. ' + G.names[w.list[0]] + ' wins with ' + w.best; kind = 'end'; }
     speakWith(base, banter(kind));
   }
   function clearCell() {
@@ -1061,7 +1240,7 @@ var GAME = {
     var base = GAME.flowCallout ? GAME.flowCallout(c, ctx) : '', kind = 'normal', isOver = gameOver();
     var hits = kinds.filter(function (k) { return KORDER.indexOf(k) >= 0; });
     if (hits.length) kind = hits[Math.floor(Math.random() * hits.length)];
-    if (isOver && !wasOver) { var w = winners(); base += '. Game over. ' + w.list.map(function (i) { return G.names[i]; }).join(' and ') + ' win' + (w.list.length > 1 ? '' : 's') + ' with ' + w.best; kind = 'end'; }
+    if (isOver && !wasOver) { bookSave(false); var w = winners(); base += '. Game over. ' + w.list.map(function (i) { return G.names[i]; }).join(' and ') + ' win' + (w.list.length > 1 ? '' : 's') + ' with ' + w.best; kind = 'end'; }
     var line = '';
     if (settings.banter) line = (kind === 'normal' && Math.random() < 0.2) ? nextLine('teen') : nextLine(kind);
     c.line = line ? ent(line).t : '';
@@ -1167,13 +1346,46 @@ var GAME = {
   var SAMPLE = GAME.sample || 'Nicely done.';
   $('selVoice').addEventListener('change', function () { settings.voiceName = $('selVoice').value; saveSet(); say(SAMPLE); });
 
+  /* ---------- record book ---------- */
+  var BOOK_TITLE = 'Wizard';
+  function bookPlayers() {
+    var w = winners(), out = [], t; for (t = 0; t < N(); t++) out.push({ name: G.names[t], score: total(t), won: w.list.indexOf(t) >= 0 });
+    return out;
+  }
+  function bookSave(final) {
+    try {
+      var ps = bookPlayers(); if (!ps.length) return null;
+      if (G.x && G.x.bookId) { var g = RVBook.updateGame(G.x.bookId, { players: ps, meta: { rounds: doneRounds(), over: gameOver() } }); if (g) return { id: g.id, created: false }; }
+      var rec = RVBook.addGame({ game: GAME.id, title: BOOK_TITLE, lowWins: !!GAME.lowWins, players: ps, meta: { rounds: doneRounds(), over: gameOver() } });
+      if (!rec) return null; if (!G.x) G.x = {}; G.x.bookId = rec.id; store(K_STATE, G);
+      if (!RVBook.seenToast()) { RVBook.markToast(); setTimeout(function () { $('toastmsg').textContent = 'Saved to your record book (see Settings)'; $('toast').hidden = false; if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 4000); }, final ? 0 : 1200); }
+      return { id: rec.id, created: true };
+    } catch (e) { return null; }
+  }
+  function bookLine() {
+    var o = RVBook.owner(), n = RVBook.count();
+    var a = $('bkLine'), b = $('bkOwnerLine'); if (a) a.textContent = n ? n + (n === 1 ? ' game' : ' games') + ' saved on this phone' : 'Nothing saved yet'; if (b) b.textContent = o ? o.name : 'Not set';
+  }
+  function askName() { var o = RVBook.owner(); $('bkName').value = o ? o.name : ''; show('nameSheet'); setTimeout(function () { $('bkName').focus(); }, 50); }
+  $('bkNameSave').addEventListener('click', function () {
+    var had = RVBook.owner(), o = RVBook.setOwner($('bkName').value); if (!o) { $('bkName').focus(); return; }
+    if (!had && WORD === 'Player' && G.names[0] === WORD + ' 1') { G.names[0] = o.name; store(K_STATE, G); render(); }
+    hide(); bookLine();
+  });
+  $('bkName').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('bkNameSave').click(); });
+  $('bkEditName').addEventListener('click', function () { askName(); });
+  $('openBook').addEventListener('click', function () { location.href = '../records/play.html?game=' + GAME.id; });
+  if (!RVBook.owner()) { var nmT = setInterval(function () { if (document.getElementById('splash')) return; clearInterval(nmT); setTimeout(function () { if (!RVBook.owner() && !openSheet) askName(); }, 400); }, 300); }
+  else if (WORD === 'Player' && G.names[0] === WORD + ' 1' && !G.rounds.length) { G.names[0] = RVBook.owner().name; store(K_STATE, G); }
+
   /* ---------- new game with undo ---------- */
   var undoSnap = null, toastTimer = null;
   function hideToast() { $('toast').hidden = true; if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; } }
   function newGame() {
-    undoSnap = JSON.stringify({ G: G, hist: hist });
+    var bk = (doneRounds() > 0 || lastEntered() >= 0) ? bookSave(true) : null;
+    undoSnap = JSON.stringify({ G: G, hist: hist, bookNew: bk && bk.created ? bk.id : null });
     var names = G.names.slice(); G = blankGame(); G.names = names; ctx.G = G; view = 'flow'; hist = []; store(K_HIST, hist); store(K_STATE, G); render(); buzz(20); tone(300, 0.12, 'sine');
-    $('toastmsg').textContent = 'New game'; $('toast').hidden = false; if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 3000);
+    $('toastmsg').textContent = bk ? 'New game. Last one is in the record book.' : 'New game'; $('toast').hidden = false; if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 3000);
   }
 
   /* ---------- taps ---------- */
@@ -1182,8 +1394,8 @@ var GAME = {
     var id = b.id, a;
     if (id === 'bReset' || id === 'newGame') { newGame(); return; }
     if (id === 'bBack') { undo(); return; }
-    if (id === 'undo') { try { var o = JSON.parse(undoSnap); if (validGame(o.G)) { G = o.G; ctx.G = G; hist = o.hist || []; store(K_HIST, hist); store(K_STATE, G); render(); } } catch (e) {} undoSnap = null; hideToast(); return; }
-    if (id === 'bSet') { loadVoices(); paintSettings(); show('setSheet'); return; }
+    if (id === 'undo') { try { var o = JSON.parse(undoSnap); if (validGame(o.G)) { G = o.G; ctx.G = G; hist = o.hist || []; store(K_HIST, hist); store(K_STATE, G); render(); } if (o.bookNew) { RVBook.removeGame(o.bookNew); if (G.x) delete G.x.bookId; store(K_STATE, G); } } catch (e) {} undoSnap = null; hideToast(); return; }
+    if (id === 'bSet') { loadVoices(); paintSettings(); bookLine(); show('setSheet'); return; }
     if (id === 'bRules') { paintRules(); show('ruleSheet'); return; }
     if (id === 'bSound') { settings.sound = !settings.sound; saveSet(); if (settings.sound) tone(600, 0.08, 'triangle'); return; }
     if (id === 'hear') { say(SAMPLE); return; }
